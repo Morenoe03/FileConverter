@@ -1,33 +1,125 @@
-import React,  {useState} from 'react'
-import { Typography, Box, Button,  } from '@mui/material'
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  Input,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
 
-export const FileConverter = () => {
+const FileConverter = () => {
+  const [file, setFile] = useState(null);
+  const [targetFormat, setTargetFormat] = useState('');
 
-    cosnt [file, setFile] = useState(null);
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
 
-    const handedleFileChange = (event) => {
-        setFile(event.target.files[0]);
-    };
+  const handleFormatChange = (event) => {
+    setTargetFormat(event.target.value);
+  };
 
+  const handleSubmit = () => {
+    if (!file || !targetFormat) {
+      alert('Please select a file and target format');
+      return;
+    }
 
+    //Sends data to the backend
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('format', targetFormat);
+
+    fetch('http://localhost:5000/convert', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(res => res.blob())
+      .then(convertedFile => {
+        const url = window.URL.createObjectURL(convertedFile);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `converted.${targetFormat}`;
+        a.click();
+      })
+      .catch(err => {
+        console.error('Conversion error:', err);
+        alert('Error converting file');
+      });
+  };
 
   return (
-    <Containter maxWidth="sm" sx= {{ mt: 5}}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: 2,
+      }}
+    >
+      <Box
+        sx={{
+          bgcolor: 'white',
+          p: 4,
+          borderRadius: 2,
+          boxShadow: 3,
+          width: '100%',
+          maxWidth: 500,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 3,
+        }}
+      >
         <Typography variant="h4" gutterBottom>
-            File Buddy: The easy way to convert files
+          File Converter
         </Typography>
 
-        <Box display="flex" flexDirection="column" gap={3}>
-            <Button variant="outlined" component="label">
-                Upload File
-                <Input type="file" onChange={handedleFileChange} sx={{display: 'none'}}
-                />
-            </Button>
-            {file && <Typography>Selected: {file.name}</Typography>}
+        <Button variant="outlined" component="label">
+          Upload File
+          <Input
+            type="file"
+            onChange={handleFileChange}
+            sx={{ display: 'none' }}
+          />
+        </Button>
+        {file && (
+          <Typography variant="body2" color="text.secondary">
+            Selected: {file.name}
+          </Typography>
+        )}
 
-        </Box>
-    </Containter>
-  )
-}
+        <FormControl fullWidth>
+          <InputLabel id="format-label">Convert To</InputLabel>
+          <Select
+            labelId="format-label"
+            value={targetFormat}
+            label="Convert To"
+            onChange={handleFormatChange}
+          >
+            <MenuItem value="jpeg">JPEG</MenuItem>
+            <MenuItem value="png">PNG</MenuItem>
+            <MenuItem value="webp">WEBP</MenuItem>
+            <MenuItem value="gif">GIF</MenuItem>
+          </Select>
+        </FormControl>
+
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          onClick={handleSubmit}
+        >
+          Convert
+        </Button>
+      </Box>
+    </Box>
+  );
+};
 
 export default FileConverter;
