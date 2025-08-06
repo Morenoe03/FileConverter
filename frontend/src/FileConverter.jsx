@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -9,11 +9,11 @@ import {
   Select,
   FormControl,
   InputLabel,
-} from '@mui/material';
+} from "@mui/material";
 
 const FileConverter = () => {
   const [file, setFile] = useState(null);
-  const [targetFormat, setTargetFormat] = useState('');
+  const [targetFormat, setTargetFormat] = useState("");
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -25,54 +25,54 @@ const FileConverter = () => {
 
   const handleSubmit = () => {
     if (!file || !targetFormat) {
-      alert('Please select a file and target format');
+      alert("Please select a file and target format");
       return;
     }
 
     //Sends data to the backend
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('format', targetFormat);
+    formData.append("file", file);
+    formData.append("format", targetFormat);
 
-    fetch('http://localhost:5000/convert', {
-      method: 'POST',
+    fetch("http://localhost:5000/convert", {
+      method: "POST",
       body: formData,
     })
-      .then(res => res.blob())
-      .then(convertedFile => {
+      .then((res) => res.blob())
+      .then((convertedFile) => {
         const url = window.URL.createObjectURL(convertedFile);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
         a.download = `converted.${targetFormat}`;
         a.click();
       })
-      .catch(err => {
-        console.error('Conversion error:', err);
-        alert('Error converting file');
+      .catch((err) => {
+        console.error("Conversion error:", err);
+        alert("Error converting file");
       });
   };
 
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         p: 2,
       }}
     >
       <Box
         sx={{
-          bgcolor: 'white',
+          bgcolor: "white",
           p: 4,
           borderRadius: 2,
           boxShadow: 3,
-          width: '100%',
+          width: "100%",
           maxWidth: 500,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           gap: 3,
         }}
       >
@@ -85,7 +85,7 @@ const FileConverter = () => {
           <Input
             type="file"
             onChange={handleFileChange}
-            sx={{ display: 'none' }}
+            sx={{ display: "none" }}
           />
         </Button>
         {file && (
