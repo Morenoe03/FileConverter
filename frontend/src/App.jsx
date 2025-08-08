@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FileConverter from "./FileConverter";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import Navbar from "./Navbar";
 
 const theme = createTheme({
   palette: {
@@ -14,6 +15,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Navbar />
       <FileConverter />
     </ThemeProvider>
   );

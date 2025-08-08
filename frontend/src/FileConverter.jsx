@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
-  Container,
   Typography,
   Input,
   MenuItem,
@@ -55,10 +54,12 @@ const FileConverter = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "100%",
+        maxWidth: 500,
         p: 2,
       }}
     >
@@ -69,7 +70,6 @@ const FileConverter = () => {
           borderRadius: 2,
           boxShadow: 3,
           width: "100%",
-          maxWidth: 500,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
