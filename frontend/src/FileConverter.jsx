@@ -8,11 +8,26 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 const FileConverter = () => {
   const [file, setFile] = useState(null);
   const [targetFormat, setTargetFormat] = useState("");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success", // success | error | warning | info
+  });
+
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -24,11 +39,10 @@ const FileConverter = () => {
 
   const handleSubmit = () => {
     if (!file || !targetFormat) {
-      alert("Please select a file and target format");
+      showSnackbar("Please select a file and target format", "error");
       return;
     }
 
-    //Sends data to the backend
     const formData = new FormData();
     formData.append("file", file);
     formData.append("format", targetFormat);
@@ -44,81 +58,101 @@ const FileConverter = () => {
         a.href = url;
         a.download = `converted.${targetFormat}`;
         a.click();
+        showSnackbar("File converted successfully!", "success");
       })
       .catch((err) => {
         console.error("Conversion error:", err);
-        alert("Error converting file");
+        showSnackbar("Error converting file", "error");
       });
   };
 
   return (
-    <Box
-      sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "100%",
-        maxWidth: 500,
-        p: 2,
-      }}
-    >
+    <>
       <Box
         sx={{
-          bgcolor: "white",
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 3,
+          maxWidth: 500,
+          p: 2,
         }}
       >
-        <Typography variant="h4" gutterBottom>
-          File Converter
-        </Typography>
-
-        <Button variant="outlined" component="label">
-          Upload File
-          <Input
-            type="file"
-            onChange={handleFileChange}
-            sx={{ display: "none" }}
-          />
-        </Button>
-        {file && (
-          <Typography variant="body2" color="text.secondary">
-            Selected: {file.name}
-          </Typography>
-        )}
-
-        <FormControl fullWidth>
-          <InputLabel id="format-label">Convert To</InputLabel>
-          <Select
-            labelId="format-label"
-            value={targetFormat}
-            label="Convert To"
-            onChange={handleFormatChange}
-          >
-            <MenuItem value="jpeg">JPEG</MenuItem>
-            <MenuItem value="png">PNG</MenuItem>
-            <MenuItem value="webp">WEBP</MenuItem>
-            <MenuItem value="gif">GIF</MenuItem>
-          </Select>
-        </FormControl>
-
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleSubmit}
+        <Box
+          sx={{
+            bgcolor: "white",
+            p: 4,
+            borderRadius: 2,
+            boxShadow: 3,
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 3,
+          }}
         >
-          Convert
-        </Button>
+          <Typography variant="h4" gutterBottom>
+            File Converter
+          </Typography>
+
+          <Button variant="outlined" component="label">
+            Upload File
+            <Input
+              type="file"
+              onChange={handleFileChange}
+              sx={{ display: "none" }}
+            />
+          </Button>
+          {file && (
+            <Typography variant="body2" color="text.secondary">
+              Selected: {file.name}
+            </Typography>
+          )}
+
+          <FormControl fullWidth>
+            <InputLabel id="format-label">Convert To</InputLabel>
+            <Select
+              labelId="format-label"
+              value={targetFormat}
+              label="Convert To"
+              onChange={handleFormatChange}
+            >
+              <MenuItem value="jpeg">JPEG</MenuItem>
+              <MenuItem value="png">PNG</MenuItem>
+              <MenuItem value="webp">WEBP</MenuItem>
+              <MenuItem value="gif">GIF</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleSubmit}
+          >
+            Convert
+          </Button>
+        </Box>
       </Box>
-    </Box>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 
